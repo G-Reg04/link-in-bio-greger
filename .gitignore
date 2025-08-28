@@ -60,3 +60,6 @@ logs
 
 # Vercel
 .vercel
+
+# Cursor
+.cursor/
