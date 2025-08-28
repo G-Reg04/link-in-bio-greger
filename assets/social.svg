@@ -1,0 +1,36 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#gradient)"/>
+  
+  <!-- Gradient Definition -->
+  <defs>
+    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3B82F6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#6366F1;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Main Content -->
+  <g transform="translate(100, 150)">
+    <!-- Title -->
+    <text x="500" y="100" text-anchor="middle" fill="white" font-family="Inter, Arial, sans-serif" font-size="80" font-weight="800">
+      Greger
+    </text>
+    
+    <!-- Subtitle -->
+    <text x="500" y="180" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-family="Inter, Arial, sans-serif" font-size="32" font-weight="400">
+      Desenvolvedor Full Stack
+    </text>
+    
+    <!-- Description -->
+    <text x="500" y="240" text-anchor="middle" fill="rgba(255,255,255,0.8)" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="400">
+      React • Node.js • TypeScript • Soluções Web Modernas
+    </text>
+    
+    <!-- Decorative Elements -->
+    <circle cx="150" cy="80" r="40" fill="rgba(255,255,255,0.1)"/>
+    <circle cx="850" cy="120" r="30" fill="rgba(255,255,255,0.1)"/>
+    <circle cx="200" cy="250" r="20" fill="rgba(255,255,255,0.1)"/>
+    <circle cx="800" cy="280" r="25" fill="rgba(255,255,255,0.1)"/>
+  </g>
+</svg>
