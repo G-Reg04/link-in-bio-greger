@@ -98,7 +98,7 @@ class ToastManager {
 // Email copy functionality
 class EmailManager {
   constructor() {
-    this.email = 'contato@greger.dev'; // Replace with actual email
+    this.email = 'rggreger.dev@gmail.com'; // Replace with actual email
     this.init();
   }
 
@@ -168,21 +168,27 @@ class ProjectsManager {
     try {
       this.showLoadingState();
       
-      const response = await fetch('/data/projects.json');
+      // Cache busting para sempre pegar a versão mais recente
+      const response = await fetch(`/data/projects.json?ts=${Date.now()}`, { 
+        cache: 'no-store' 
+      });
+      
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       
-      allProjects = await response.json();
+      const rawProjects = await response.json();
       
-      // Sort by date (newest first) and featured status
-      allProjects.sort((a, b) => {
-        if (a.featured && !b.featured) return -1;
-        if (!a.featured && b.featured) return 1;
-        return new Date(b.date) - new Date(a.date);
-      });
+      // Validar e sanitizar dados
+      allProjects = this.validateAndSanitizeProjects(rawProjects);
+      
+      // Aplicar lógica de featured vs recentes
+      const projectsToShow = this.selectProjectsToShow(allProjects);
+      
+      // Ordenar projetos
+      this.sortProjects(projectsToShow);
 
-      filteredProjects = [...allProjects];
+      filteredProjects = [...projectsToShow];
       displayedProjectsCount = 0;
 
       this.hideLoadingState();
@@ -195,16 +201,73 @@ class ProjectsManager {
     }
   }
 
+  validateAndSanitizeProjects(projects) {
+    if (!Array.isArray(projects)) {
+      console.warn('Projects data is not an array, returning empty array');
+      return [];
+    }
+
+    return projects.map(project => ({
+      title: project.title || 'Projeto sem título',
+      description: project.description || 'Descrição não disponível',
+      demoUrl: project.demoUrl || null,
+      repoUrl: project.repoUrl || null,
+      tags: Array.isArray(project.tags) ? project.tags : [],
+      date: project.date || null,
+      featured: Boolean(project.featured),
+      thumb: project.thumb || null
+    }));
+  }
+
+  selectProjectsToShow(projects) {
+    // Se existir pelo menos um projeto featured, mostrar apenas os featured
+    const featuredProjects = projects.filter(project => project.featured);
+    
+    if (featuredProjects.length > 0) {
+      // Máximo 6 projetos featured
+      return featuredProjects.slice(0, 6);
+    }
+    
+    // Se não há featured, mostrar os 6 mais recentes
+    return projects.slice(0, 6);
+  }
+
+  sortProjects(projects) {
+    projects.sort((a, b) => {
+      // Primeiro, priorizar featured
+      if (a.featured && !b.featured) return -1;
+      if (!a.featured && b.featured) return 1;
+      
+      // Depois, ordenar por data se ambos tiverem data
+      if (a.date && b.date) {
+        return new Date(b.date) - new Date(a.date);
+      }
+      
+      // Se apenas um tem data, ele vem primeiro
+      if (a.date && !b.date) return -1;
+      if (!a.date && b.date) return 1;
+      
+      // Se nenhum tem data, manter ordem original
+      return 0;
+    });
+  }
+
   showLoadingState() {
     document.getElementById('loading-state')?.classList.remove('hidden');
     document.getElementById('projects-container')?.classList.add('hidden');
     document.getElementById('error-state')?.classList.add('hidden');
     document.getElementById('empty-state')?.classList.add('hidden');
+    document.getElementById('filter-container')?.classList.add('hidden');
+    document.getElementById('load-more-container')?.classList.add('hidden');
+    
+    // Atualizar aria-live para screen readers
+    this.announceStatus('Carregando projetos...');
   }
 
   hideLoadingState() {
     document.getElementById('loading-state')?.classList.add('hidden');
     document.getElementById('projects-container')?.classList.remove('hidden');
+    document.getElementById('filter-container')?.classList.remove('hidden');
   }
 
   showErrorState() {
@@ -212,11 +275,19 @@ class ProjectsManager {
     document.getElementById('projects-container')?.classList.add('hidden');
     document.getElementById('error-state')?.classList.remove('hidden');
     document.getElementById('empty-state')?.classList.add('hidden');
+    document.getElementById('filter-container')?.classList.add('hidden');
+    document.getElementById('load-more-container')?.classList.add('hidden');
+
+    // Anunciar erro para screen readers
+    this.announceStatus('Erro ao carregar projetos. Use o botão para tentar novamente.');
 
     // Retry button
     const retryBtn = document.getElementById('retry-btn');
     if (retryBtn) {
-      retryBtn.addEventListener('click', () => this.loadProjects());
+      // Remove listeners anteriores
+      const newRetryBtn = retryBtn.cloneNode(true);
+      retryBtn.parentNode.replaceChild(newRetryBtn, retryBtn);
+      newRetryBtn.addEventListener('click', () => this.loadProjects());
     }
   }
 
@@ -225,19 +296,48 @@ class ProjectsManager {
     document.getElementById('projects-container')?.classList.add('hidden');
     document.getElementById('error-state')?.classList.add('hidden');
     document.getElementById('empty-state')?.classList.remove('hidden');
+    document.getElementById('filter-container')?.classList.add('hidden');
+    document.getElementById('load-more-container')?.classList.add('hidden');
+    
+    // Anunciar estado vazio para screen readers
+    this.announceStatus('Nenhum projeto encontrado.');
+  }
+
+  announceStatus(message) {
+    // Criar ou atualizar elemento de status para screen readers
+    let statusElement = document.getElementById('projects-status');
+    if (!statusElement) {
+      statusElement = document.createElement('div');
+      statusElement.id = 'projects-status';
+      statusElement.className = 'sr-only';
+      statusElement.setAttribute('role', 'status');
+      statusElement.setAttribute('aria-live', 'polite');
+      document.body.appendChild(statusElement);
+    }
+    statusElement.textContent = message;
   }
 
   createFilterTags() {
     const filterContainer = document.getElementById('filter-container');
     if (!filterContainer) return;
 
-    // Get all unique tags
-    const allTags = [...new Set(allProjects.flatMap(project => project.tags))].sort();
+    // Usar todos os projetos originais para gerar tags, não apenas os filtrados
+    const allTags = [...new Set(allProjects.flatMap(project => 
+      Array.isArray(project.tags) ? project.tags : []
+    ))].sort();
 
     // Clear existing tags except "Todos"
     const allButton = filterContainer.querySelector('[data-filter="all"]');
     filterContainer.innerHTML = '';
     filterContainer.appendChild(allButton);
+
+    // Se não há tags, esconder o container de filtros
+    if (allTags.length === 0) {
+      filterContainer.classList.add('hidden');
+      return;
+    }
+
+    filterContainer.classList.remove('hidden');
 
     // Add tag buttons
     allTags.forEach(tag => {
@@ -246,14 +346,29 @@ class ProjectsManager {
       button.textContent = tag;
       button.dataset.filter = tag;
       button.setAttribute('aria-pressed', 'false');
+      button.setAttribute('role', 'button');
       
       button.addEventListener('click', (e) => this.handleFilterClick(e));
+      
+      // Suporte a teclado
+      button.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          this.handleFilterClick(e);
+        }
+      });
       
       filterContainer.appendChild(button);
     });
 
     // Add event listener to "Todos" button
     allButton.addEventListener('click', (e) => this.handleFilterClick(e));
+    allButton.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        this.handleFilterClick(e);
+      }
+    });
   }
 
   handleFilterClick(event) {
@@ -271,15 +386,24 @@ class ProjectsManager {
     button.classList.remove('border-gray-300', 'dark:border-gray-600', 'text-gray-700', 'dark:text-gray-300');
     button.setAttribute('aria-pressed', 'true');
 
-    // Filter projects
+    // Filter projects usando TODOS os projetos originais, não apenas os selecionados
     if (filter === 'all') {
-      filteredProjects = [...allProjects];
+      filteredProjects = [...this.selectProjectsToShow(allProjects)];
     } else {
-      filteredProjects = allProjects.filter(project => project.tags.includes(filter));
+      // Filtrar por tag e depois aplicar lógica de seleção
+      const tagFilteredProjects = allProjects.filter(project => 
+        Array.isArray(project.tags) && project.tags.includes(filter)
+      );
+      filteredProjects = [...this.selectProjectsToShow(tagFilteredProjects)];
     }
 
     displayedProjectsCount = 0;
     this.displayProjects();
+    
+    // Anunciar resultado do filtro
+    const resultCount = filteredProjects.length;
+    const filterName = filter === 'all' ? 'todos os projetos' : `projetos com tag "${filter}"`;
+    this.announceStatus(`Filtro aplicado: ${filterName}. ${resultCount} projeto${resultCount !== 1 ? 's' : ''} encontrado${resultCount !== 1 ? 's' : ''}.`);
   }
 
   displayProjects() {
@@ -389,7 +513,21 @@ class ProjectsManager {
     
     if (!loadMoreContainer || !loadMoreBtn) return;
 
-    if (displayedProjectsCount < filteredProjects.length) {
+    // Verificar se há mais projetos no conjunto filtrado original (todos os projetos com filtro aplicado)
+    // Em vez de usar apenas os primeiros 6 do filteredProjects
+    const currentFilter = document.querySelector('.filter-tag[aria-pressed="true"]')?.dataset.filter || 'all';
+    
+    let totalAvailableProjects;
+    if (currentFilter === 'all') {
+      totalAvailableProjects = allProjects.length;
+    } else {
+      totalAvailableProjects = allProjects.filter(project => 
+        Array.isArray(project.tags) && project.tags.includes(currentFilter)
+      ).length;
+    }
+
+    // Mostrar "Ver mais" apenas se há mais de 6 projetos no total e ainda não mostramos todos
+    if (totalAvailableProjects > 6 && displayedProjectsCount < filteredProjects.length) {
       loadMoreContainer.classList.remove('hidden');
       
       // Remove existing event listeners

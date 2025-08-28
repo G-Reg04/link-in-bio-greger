@@ -169,6 +169,56 @@ font-family: 'Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe
    - Tags são usadas para filtros (geradas automaticamente)
    - Thumbnails são opcionais (placeholder será usado)
 
+## 🔄 Como Atualizar o projects.json
+
+### Atualizações Instantâneas
+
+O projeto está configurado para **sempre buscar a versão mais recente** do arquivo `projects.json`:
+
+1. **Edite o arquivo**: Modifique `data/projects.json` localmente
+2. **Commit e Push**: 
+   ```bash
+   git add data/projects.json
+   git commit -m "feat(projects): atualizar lista de projetos"
+   git push
+   ```
+3. **Deploy Automático**: A Vercel re-deploya automaticamente em ~30-60 segundos
+4. **Cache Busting**: O site usa `?ts=${Date.now()}` para sempre pegar a versão mais recente
+
+### Tecnicamente, Como Funciona?
+
+```javascript
+// Cache busting para evitar cache do browser
+const response = await fetch(`/data/projects.json?ts=${Date.now()}`, { 
+  cache: 'no-store' 
+});
+```
+
+**Sem cache local**: `cache: 'no-store'` força o browser a sempre fazer request  
+**Sem cache CDN**: A query string `?ts=` com timestamp força o CDN a buscar nova versão  
+**Cache Headers**: O `vercel.json` configura cache de 0 segundos para o JSON
+
+### Lógica de Exibição
+
+**Se houver projetos com `featured: true`**:
+- Mostra apenas os projetos featured (máx. 6)
+- Ignora projetos não-featured
+
+**Se NÃO houver featured**:
+- Mostra os 6 projetos mais recentes
+- Ordenados por data (mais recente primeiro)
+
+**Botão "Ver Mais"**:
+- Aparece apenas quando há mais de 6 projetos no conjunto filtrado
+- Funciona com filtros de tags
+
+### Estados Gerenciados
+
+- **Loading**: Skeleton cards durante carregamento
+- **Empty**: Mensagem quando array vazio ou sem resultados
+- **Error**: Tela de erro com botão "Tentar Novamente"
+- **Success**: Projetos carregados com filtros funcionais
+
 ### Validação
 
 O sistema inclui tratamento para:
