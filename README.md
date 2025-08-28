@@ -286,7 +286,7 @@ Contribuições são bem-vindas! Sinta-se à vontade para:
 
 ## 📬 Contato
 
-**Greger** - [contato@greger.dev](mailto:contato@greger.dev)
+**Renato Greger** - [rggreger.dev@gmail.com](mailto:rggreger.dev@gmail.com)
 
 **Links do Projeto**:
 - 🔗 [Demo](https://link-in-bio-greger.vercel.app)
