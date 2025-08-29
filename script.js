@@ -445,13 +445,12 @@ class ProjectsManager {
     const featuredBadge = project.featured ? 
       '<span class="absolute top-4 left-4 bg-primary-600 text-white text-xs font-bold px-2 py-1 rounded-full">Destaque</span>' : '';
 
-    const thumbnail = project.thumb ? 
+    // Gerar gradient baseado no título do projeto para consistência
+    const gradientThumb = this.generateGradientThumb(project.title);
+
+    const thumbnail = project.thumb && project.thumb.trim() !== '' ? 
       `<img src="${project.thumb}" alt="${project.title}" class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy">` :
-      `<div class="w-full h-48 bg-gradient-to-br from-primary-100 to-indigo-200 dark:from-gray-700 dark:to-gray-600 flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
-        <svg class="w-16 h-16 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
-        </svg>
-      </div>`;
+      gradientThumb;
 
     const formattedDate = new Date(project.date).toLocaleDateString('pt-BR', {
       year: 'numeric',
@@ -505,6 +504,94 @@ class ProjectsManager {
     `;
 
     return card;
+  }
+
+  generateGradientThumb(title) {
+    // Paleta de gradientes modernos e atraentes
+    const gradients = [
+      // Azuis e roxos
+      'from-blue-500 via-purple-500 to-pink-500',
+      'from-indigo-600 via-blue-500 to-cyan-400',
+      'from-purple-600 via-blue-600 to-blue-400',
+      
+      // Verdes e azuis
+      'from-green-400 via-blue-500 to-purple-600',
+      'from-teal-400 via-green-500 to-blue-600',
+      'from-emerald-500 via-teal-500 to-cyan-500',
+      
+      // Laranjas e vermelhos
+      'from-orange-500 via-red-500 to-pink-500',
+      'from-yellow-400 via-orange-500 to-red-500',
+      'from-pink-500 via-red-500 to-orange-500',
+      
+      // Tons modernos
+      'from-violet-600 via-purple-600 to-blue-600',
+      'from-cyan-500 via-blue-500 to-indigo-600',
+      'from-rose-500 via-pink-500 to-purple-500',
+      
+      // Gradientes tech
+      'from-slate-700 via-blue-600 to-indigo-700',
+      'from-gray-800 via-purple-700 to-violet-800',
+      'from-blue-800 via-indigo-700 to-purple-800'
+    ];
+
+    // Ícones relacionados a desenvolvimento
+    const icons = [
+      // Código e desenvolvimento
+      '<svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>',
+      
+      // Aplicativo
+      '<svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>',
+      
+      // Banco de dados
+      '<svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"></path></svg>',
+      
+      // Engrenagem
+      '<svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>',
+      
+      // Globo (web)
+      '<svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9"></path></svg>',
+      
+      // Pasta de projetos
+      '<svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>',
+      
+      // Raio (performance)
+      '<svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>',
+      
+      // Estrela (featured)
+      '<svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path></svg>'
+    ];
+
+    // Gerar índice baseado no hash do título para consistência
+    const hashCode = title.split('').reduce((hash, char) => {
+      return ((hash << 5) - hash) + char.charCodeAt(0);
+    }, 0);
+    
+    const gradientIndex = Math.abs(hashCode) % gradients.length;
+    const iconIndex = Math.abs(hashCode >> 3) % icons.length;
+    
+    const selectedGradient = gradients[gradientIndex];
+    const selectedIcon = icons[iconIndex];
+
+    return `
+      <div class="relative w-full h-48 bg-gradient-to-br ${selectedGradient} flex items-center justify-center group-hover:scale-105 transition-transform duration-300 overflow-hidden">
+        <!-- Pattern overlay -->
+        <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(circle at 25% 25%, white 2px, transparent 2px), radial-gradient(circle at 75% 75%, white 2px, transparent 2px); background-size: 24px 24px;"></div>
+        
+        <!-- Gradient overlay -->
+        <div class="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-white/10"></div>
+        
+        <!-- Icon -->
+        <div class="relative z-10 opacity-80 group-hover:opacity-100 transition-opacity duration-300">
+          ${selectedIcon}
+        </div>
+        
+        <!-- Floating particles effect -->
+        <div class="absolute top-4 left-4 w-2 h-2 bg-white/30 rounded-full animate-pulse"></div>
+        <div class="absolute top-8 right-6 w-1 h-1 bg-white/40 rounded-full animate-pulse" style="animation-delay: 0.5s;"></div>
+        <div class="absolute bottom-6 left-8 w-1.5 h-1.5 bg-white/20 rounded-full animate-pulse" style="animation-delay: 1s;"></div>
+      </div>
+    `;
   }
 
   updateLoadMoreButton() {
