@@ -8,23 +8,5 @@
     "date": "2025-08-27",        
     "featured": true,         
     "thumb": ""          
-  },
-  {
-    "title": "Sistema de Biblioteca",
-    "description": "Sistema web para gestão de biblioteca universitária desenvolvido como projeto acadêmico. Inclui controle de empréstimos, reservas, catálogo online e relatórios administrativos.",
-    "demoUrl": "https://biblioteca-sistema-demo.vercel.app",
-    "repoUrl": "https://github.com/G-Reg04/sistema-biblioteca",
-    "tags": ["React", "Node.js", "MySQL", "Express"],
-    "date": "2024-12-15",
-    "featured": false
-  },
-  {
-    "title": "Landing Page Responsiva",
-    "description": "Landing page moderna e responsiva para startup de tecnologia. Design clean, animações suaves e otimizada para conversões com formulário de contato integrado.",
-    "demoUrl": "https://landing-tech-startup.vercel.app",
-    "repoUrl": "https://github.com/G-Reg04/landing-page-tech",
-    "tags": ["HTML", "CSS", "JavaScript", "SASS", "Responsive"],
-    "date": "2024-11-20",
-    "featured": false
   }
 ]
