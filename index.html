@@ -60,7 +60,7 @@
 
     <!-- Google Fonts -->
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Manrope:wght@400;600;800&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&family=Manrope:wght@400;600;800&family=Poppins:wght@400;600;700;800;900&display=swap"
       rel="stylesheet"
     />
 
@@ -71,27 +71,37 @@
         darkMode: 'class',
         theme: {
           extend: {
-            fontFamily: {
-              sans: [
-                'Inter',
-                'system-ui',
-                '-apple-system',
-                'BlinkMacSystemFont',
-                'Segoe UI',
-                'Roboto',
-                'sans-serif',
-              ],
-              display: [
-                'Manrope',
-                'Inter',
-                'system-ui',
-                '-apple-system',
-                'BlinkMacSystemFont',
-                'Segoe UI',
-                'Roboto',
-                'sans-serif',
-              ],
-            },
+                       fontFamily: {
+             sans: [
+               'Inter',
+               'system-ui',
+               '-apple-system',
+               'BlinkMacSystemFont',
+               'Segoe UI',
+               'Roboto',
+               'sans-serif',
+             ],
+             display: [
+               'Manrope',
+               'Inter',
+               'system-ui',
+               '-apple-system',
+               'BlinkMacSystemFont',
+               'Segoe UI',
+               'Roboto',
+               'sans-serif',
+             ],
+             heading: [
+               'Poppins',
+               'Inter',
+               'system-ui',
+               '-apple-system',
+               'BlinkMacSystemFont',
+               'Segoe UI',
+               'Roboto',
+               'sans-serif',
+             ],
+           },
             colors: {
               primary: {
                 50: '#eff6ff',
@@ -246,11 +256,11 @@
               class="w-32 h-32 rounded-full mx-auto mb-6 border-4 border-white dark:border-gray-700 shadow-xl"
               loading="eager"
             />
-            <h1
-              class="text-5xl md:text-7xl font-display font-800 mb-4 bg-gradient-to-r from-primary-600 to-indigo-600 bg-clip-text text-transparent"
-            >
-              Renato Greger
-            </h1>
+                         <h1
+               class="text-5xl md:text-7xl font-heading font-black mb-4 bg-gradient-to-r from-primary-600 to-indigo-600 bg-clip-text text-transparent tracking-tight"
+             >
+               Renato Greger
+             </h1>
             <p
               class="text-xl md:text-2xl text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto"
             >
