@@ -30,5 +30,16 @@
     "date": "2025-08-31",
     "featured": true,
     "thumb": ""
+  }, 
+
+  {
+    "title":"habitcli-greg",
+    "description": "Rastreador de hábitos em CLI (Python + SQLite). Adicione/marque hábitos, veja a semana e exporte JSON. Código limpo, testes e tooling de dev.",
+    "demoUrl":"",
+    "repoUrl":"https://github.com/G-Reg04/habitcli-greg",
+    "tags":["Python","SQLite","CLI","Testes","DevTools"],
+    "date":"2025-09-01",
+    "featured":true,
+    "thumb":""
   }
 ]
